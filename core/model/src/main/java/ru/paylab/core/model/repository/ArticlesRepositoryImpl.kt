@@ -1,7 +1,6 @@
 package ru.paylab.core.model.repository
 
 import androidx.lifecycle.asFlow
-import androidx.lifecycle.map
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -16,19 +15,17 @@ import ru.paylab.core.database.model.ArticleFavoriteBookmark
 import ru.paylab.core.database.model.ArticleFavoriteIsRead
 import ru.paylab.core.database.model.ArticlesEntity
 import ru.paylab.core.database.model.CategoriesEntity
-import ru.paylab.core.database.model.CategoryFavorite
-import ru.paylab.core.model.utils.toArticleCategories
-import ru.paylab.core.database.util.asEntity
-import ru.paylab.core.database.util.categoryCrossReferences
-import ru.paylab.core.database.util.categoryEntityShells
-import ru.paylab.core.model.utils.toArticle
-import ru.paylab.core.model.utils.toArticleList
-import ru.paylab.core.model.utils.toCategoriesList
-import ru.paylab.core.datastore.UserSettingsDataStore
+import ru.paylab.core.model.utils.asEntity
+import ru.paylab.core.model.utils.categoryCrossReferences
+import ru.paylab.core.model.utils.categoryEntityShells
 import ru.paylab.core.localcache.LocalCache
+import ru.paylab.core.model.ArticlesRepository
+import ru.paylab.core.model.UserSettingsRepository
 import ru.paylab.core.model.data.Article
 import ru.paylab.core.model.data.ArticleCategories
-import ru.paylab.core.model.data.Category
+import ru.paylab.core.model.utils.toArticle
+import ru.paylab.core.model.utils.toArticleCategories
+import ru.paylab.core.model.utils.toArticleList
 import ru.paylab.core.network.ArticleFeed
 import ru.paylab.core.network.FeedItem
 import ru.paylab.core.network.NetworkDataSource
@@ -41,12 +38,12 @@ internal class ArticlesRepositoryImpl @Inject constructor(
     private val rssService: NetworkDataSource,
     private val articleDao: ArticleDao,
     private val categoryDao: CategoryDao,
-    private val settingsRepository: UserSettingsDataStore,
+    private val settingsRepository: UserSettingsRepository,
     private val localCacheRepository: LocalCache,
-) : ru.paylab.core.model.ArticlesRepository {
+) : ArticlesRepository {
 
     private val _url = settingsRepository.url
-    private val dateForDelete = settingsRepository.deleteDate
+    private val dayForDelete = settingsRepository.deleteDay
     private val savedIds = localCacheRepository.getSavedIds()
 
     override fun getAllArticles(): Flow<List<Article>> = combine(
@@ -66,12 +63,6 @@ internal class ArticlesRepositoryImpl @Inject constructor(
     ) { article, ids ->
         article.toArticleList(ids)
     }
-
-    override fun getSelectedCategories(): Flow<List<Category>> =
-        categoryDao.getSelectedCategoryEntities().
-        map { categories ->
-            categories.toCategoriesList()
-        }.asFlow()
 
     override fun getArticlesByCategoryAll(): Flow<List<ArticleCategories>> =
         combine(
@@ -97,16 +88,16 @@ internal class ArticlesRepositoryImpl @Inject constructor(
 
     override fun getUnreadCountArticles(): Flow<Long> = articleDao.getUnreadCountArticles()
 
+    override fun getSavedArticles(): Flow<List<Article>> = combine(
+        articleDao.getAllArticles().asFlow(), savedIds
+    ) { article, ids ->
+        article.filter { ids.contains(it.id)  }
+            .toArticleList(ids)
+    }
+
     override suspend fun updateArticle( id: Int, isBookmark: Boolean) {
         try {
             articleDao.updateBookMark(ArticleFavoriteBookmark(id, isBookmark))
-        } catch (_: Throwable) {
-        }
-    }
-
-    override suspend fun updateCategory(id: Int, isFavorite: Boolean) {
-        try {
-            categoryDao.updateFavorite(CategoryFavorite(id, isFavorite))
         } catch (_: Throwable) {
         }
     }
@@ -123,10 +114,8 @@ internal class ArticlesRepositoryImpl @Inject constructor(
 
     private val _feedTitle = MutableStateFlow("")
     override fun getTitleFeed():Flow<String> = _feedTitle
-    //override val feedTitle: SharedFlow<String> = _feedTitle
 
     private suspend fun setFeedTitle(feedTitle: String) {
-        println("TITLE: $feedTitle")
         _feedTitle.emit(feedTitle)
     }
 
@@ -151,7 +140,7 @@ internal class ArticlesRepositoryImpl @Inject constructor(
                     .distinct().flatten(),
             )
 
-            val date = dateForDelete.firstOrNull()?: 30
+            val date = dayForDelete.firstOrNull()?: 30
             val time = Instant.now().epochSecond - date*24*60*60
             val ids = savedIds.firstOrNull()?: emptySet()
             articleDao.deleteOldArticles( time, ids)
@@ -168,26 +157,13 @@ internal class ArticlesRepositoryImpl @Inject constructor(
 
     private suspend fun fetchArticlesFeed( url: String ): ArticleFeed = coroutineScope {
         val articleFeeds = rssService.getFeed(url)
-
         setFeedTitle(articleFeeds.feedTitle)
-        println("****************** FINISH MOD ***********************")
-        println("articleFeeds MOD: ${articleFeeds.feedItem[0].categories.size}")
-        println("articleFeeds MOD: ${articleFeeds.feedItem.size}")
-        println("RSS MOD: ${articleFeeds.feedItem.size}")
-
         return@coroutineScope articleFeeds
     }
 
-    ////////////////// ****************** Local cache ***********************
     override fun getArticle(articleId: Int): Flow<Article> = articleDao.getArticle(articleId)
         .map { article ->
             article!!.toArticle(localCacheRepository.checkSavedId(articleId))
-        }
-
-    override fun getAllCategories(): Flow<List<Category>> = categoryDao.getCategoryEntities()
-        .asFlow()
-        .map { categories ->
-            categories.toCategoriesList()
         }
 
     override suspend fun clearArticle() {
@@ -207,4 +183,30 @@ internal class ArticlesRepositoryImpl @Inject constructor(
         clearArticle()
         refresh()
     }
+
+    override fun getSavedDocFileName(id: Int):String {
+        return localCacheRepository.savedDocFileName(id)
+    }
+    override fun prepareSaveDoc(id: Int):String {
+        return localCacheRepository.prepareSaveDoc(id)
+    }
+
+    override fun getImageFileName(id: Int):String {
+        return localCacheRepository.savedImageFileName(id)
+    }
+
+    override fun getSavedArticle():Flow<Long> {
+        return localCacheRepository.getSavedArticle()
+    }
+
+    override suspend fun saveImage(id: Int, url: String) {
+        if (url.isNotEmpty()) localCacheRepository.saveImage(id, url)
+        localCacheRepository.refresh()
+    }
+
+    override suspend fun refreshLocalCache() {
+        localCacheRepository.refresh()
+    }
+
+
 }

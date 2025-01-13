@@ -1,7 +1,5 @@
 package ru.paylab.core.model.data
 
-import ru.paylab.core.datastore.FilterView
-
 fun Category.toTitleCategory(): TitleCategory {
     return TitleCategory(
         id = id,

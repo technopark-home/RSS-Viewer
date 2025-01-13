@@ -17,11 +17,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import ru.paylab.core.datastore.ColorMode
+import ru.paylab.core.model.data.ColorMode
 import ru.paylab.core.designsystem.theme.RssViewerTheme
-
-private val lightScrim = android.graphics.Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
-private val darkScrim = android.graphics.Color.argb(0x80, 0x1b, 0x1b, 0x1b)
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -72,6 +69,3 @@ private fun useDynamicTheme(uiState: MainUiState): Boolean = when (uiState) {
     MainUiState.Loading -> false
     is MainUiState.Success -> uiState.useDynamicColor
 }
-
-///// KIT
-// Function to generate a Toast

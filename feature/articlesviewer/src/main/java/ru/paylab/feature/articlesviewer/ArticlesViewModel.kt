@@ -14,30 +14,23 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import ru.paylab.core.model.ArticlesRepository
-import ru.paylab.core.datastore.UserSettingsDataStore
-import ru.paylab.core.localcache.LocalCache
+import ru.paylab.core.model.CategoriesRepository
+import ru.paylab.core.model.UserSettingsRepository
 import ru.paylab.core.model.data.ArticleCategories
 import ru.paylab.core.model.data.Category
-import ru.paylab.core.datastore.FilterView
+import ru.paylab.core.model.data.FilterView
 import ru.paylab.core.model.data.TitleCategory
 import ru.paylab.core.model.data.toTitleCategoryList
 import javax.inject.Inject
 
 @HiltViewModel
 class ArticlesViewModel @Inject constructor(
-    private val userDataRepository: UserSettingsDataStore,
+    userDataRepository: UserSettingsRepository,
     private val articlesRepository: ArticlesRepository,
-    private val localRepository: LocalCache,
+    private val categoriesRepository: CategoriesRepository,
 ) : ViewModel() {
     var isRefreshing by mutableStateOf(false)
         private set
-
-    init {
-        // TODO Move global model
-        viewModelScope.launch(Dispatchers.IO) {
-            localRepository.refresh()
-        }
-    }
 
     fun refresh() {
         isRefreshing = true
@@ -47,18 +40,6 @@ class ArticlesViewModel @Inject constructor(
             } finally {
                 isRefreshing = false
             }
-        }
-    }
-
-    protected fun finalize() {
-        println("******************* TopicsViewModel **************************")
-    }
-
-    fun saveImage(id: Int, url: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            localRepository.checkDocFile(id)
-            if (url.isNotEmpty()) localRepository.saveImage(id, url)
-            localRepository.refresh()
         }
     }
 
@@ -84,17 +65,16 @@ class ArticlesViewModel @Inject constructor(
 
     fun clearSaved(id: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            localRepository.clearSaved(id)
-            localRepository.refresh()
+            articlesRepository.clearSaved(id)
         }
     }
 
     private val _showByCategory: Flow<Boolean> = userDataRepository.showByCategory
 
-    private val _filters: Flow<Set<FilterView>> = userDataRepository.filterSet
+    private val _filters: Flow<Set<FilterView>> = userDataRepository.filters
 
     private val _selectedCategoryPagingDataFlow: Flow<List<Category>> =
-        articlesRepository.getSelectedCategories()
+        categoriesRepository.getSelectedCategories()
 
     val titleCategory: StateFlow<List<TitleCategory>> = combine(
         _filters, _selectedCategoryPagingDataFlow, _showByCategory

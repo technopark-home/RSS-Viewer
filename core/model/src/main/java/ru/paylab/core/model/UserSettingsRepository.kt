@@ -1,8 +1,10 @@
-package ru.paylab.core.datastore
+package ru.paylab.core.model
 
 import kotlinx.coroutines.flow.Flow
+import ru.paylab.core.model.data.ColorMode
+import ru.paylab.core.model.data.FilterView
 
-interface UserSettingsDataStore {
+interface UserSettingsRepository {
     val url: Flow<String>
 
     suspend fun saveURL(url: String)
@@ -14,20 +16,20 @@ interface UserSettingsDataStore {
     val showByCategory: Flow<Boolean>
 
     suspend fun saveShowByCategory(showByCategory: Boolean)
+    val filters: Flow<Set<FilterView>>
 
-    val filterSet: Flow<Set<FilterView>>
+    suspend fun saveFilters(filters: Set<FilterView>)
 
-    suspend fun saveFilterSet(filterSet: Set<FilterView>)
+    val deleteDay: Flow<Long>
 
-    val deleteDate: Flow<Long>
-
-    suspend fun saveDeleteDate(deleteDate: Long)
+    suspend fun saveDeleteDay(deleteDay: Long)
 
     val colorMode: Flow<ColorMode>
 
     suspend fun saveColorMode(colorMode: ColorMode)
 
-    suspend fun clear()
+    suspend fun clearSettings()
 
     fun getURLS(): List<String>
+
 }

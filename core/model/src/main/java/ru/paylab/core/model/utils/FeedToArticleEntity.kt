@@ -1,10 +1,11 @@
-package ru.paylab.core.database.util
+package ru.paylab.core.model.utils
 
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.fromHtml
 import ru.paylab.core.database.model.ArticlesCategoriesCrossRef
 import ru.paylab.core.database.model.ArticlesEntity
 import ru.paylab.core.database.model.CategoriesEntity
+import ru.paylab.core.database.util.UtilsDateTime
 import ru.paylab.core.network.FeedItem
 
 fun FeedItem.categoryCrossReferences(): List<ArticlesCategoriesCrossRef> =

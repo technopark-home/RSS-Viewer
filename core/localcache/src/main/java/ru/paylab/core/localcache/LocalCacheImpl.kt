@@ -10,7 +10,6 @@ import coil3.toBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -67,7 +66,7 @@ internal class LocalCacheImpl @Inject constructor(
             val imgLoader = ImageRequest.Builder(context).data(url).build()
             when (val resultLoading = img.execute(imgLoader)) {
                 is SuccessResult -> saveBitmap(resultLoading, "$id.${IMAGE_FILE_NAME_EXTENSION}")
-                is ErrorResult -> println("Load img error ${resultLoading.throwable.message}")
+                is ErrorResult -> {/**/} //println("Load img error ${resultLoading.throwable.message}")
             }
         }
     }
@@ -98,13 +97,13 @@ internal class LocalCacheImpl @Inject constructor(
             fos.write(bitmapData)
             fos.flush()
             fos.close()
-            println("Save img FIN")
+            //println("Save img FIN")
         } catch (e: Throwable) {
-            println("Error save Image: ${e.message}")
+            //println("Error save Image: ${e.message}")
         }
     }
 
-    override fun saveDoc(id: Int): String {
+    override fun prepareSaveDoc(id: Int): String {
         val filename = "$id.${DOC_FILE_NAME_EXTENSION}"
         val path = File(localCacheDir)
         if (!path.exists()) path.mkdirs()
@@ -112,9 +111,9 @@ internal class LocalCacheImpl @Inject constructor(
         val docFile = File(path, filename)
         if (docFile.exists()) {
             docFile.delete()
-            println("save DELETE DOC $id")
+            //println("save DELETE DOC $id")
         }
-        println("saveDoc: ${docFile.path}")
+        //println("saveDoc: ${docFile.path}")
         return docFile.path
     }
 

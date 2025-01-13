@@ -18,7 +18,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import ru.paylab.core.designsystem.uikit.RssTextWithBadge
 import ru.paylab.core.model.data.ArticleCategories
-import ru.paylab.core.datastore.FilterView
+import ru.paylab.core.model.data.FilterView
 import ru.paylab.core.model.data.toArticle
 
 @Composable
@@ -29,10 +29,7 @@ fun ArticlesTabs(
     articlesViewModel: ArticlesViewModel = hiltViewModel(),
 ) {
     val selectedCategories by articlesViewModel.titleCategory.collectAsStateWithLifecycle()
-    // TODO Move other screen!!!
-    //val articlesByCategoryAll = articlesViewModel.articleCategoriesByCategoryAll.collectAsStateWithLifecycle()
     val allArticles by articlesViewModel.allArticles.collectAsStateWithLifecycle()
-    //val unreadArticlesCount by topicsViewModel.unreadArticlesCount.collectAsStateWithLifecycle()
     val onBookMark = articlesViewModel::markAsBookmark
     val onMarkRead = articlesViewModel::markIsRead
     val onSave: (Int, Boolean) -> Unit = { id, isSave ->

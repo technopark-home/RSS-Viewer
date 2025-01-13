@@ -58,8 +58,6 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(project(":core:designsystem"))
     implementation(project(":core:model"))
-    implementation(project(":core:localcache"))
-    implementation(project(":core:database"))
     implementation(project(":feature:searchcategories"))
     ksp(libs.hilt.android.compiler)
 

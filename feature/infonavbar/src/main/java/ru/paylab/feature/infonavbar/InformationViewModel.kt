@@ -9,17 +9,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import ru.paylab.core.model.ArticlesRepository
 import ru.paylab.core.model.CategoriesRepository
-import ru.paylab.core.localcache.LocalCache
 import javax.inject.Inject
 
 @HiltViewModel
 class InformationViewModel @Inject constructor(
     articlesRepository: ArticlesRepository,
     categoriesRepository: CategoriesRepository,
-    localCache: LocalCache,
 ) : ViewModel() {
 
-    private val _savedArticles:Flow<Long> = localCache.getSavedArticle()
+    private val _savedArticles:Flow<Long> = articlesRepository.getSavedArticle()
     val savedArticles: StateFlow<Long> = _savedArticles.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),

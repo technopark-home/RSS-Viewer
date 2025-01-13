@@ -43,8 +43,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ru.paylab.core.datastore.ColorMode
-import ru.paylab.core.datastore.FilterView
+import ru.paylab.core.model.data.ColorMode
+import ru.paylab.core.model.data.FilterView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

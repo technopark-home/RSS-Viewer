@@ -5,13 +5,14 @@ import androidx.lifecycle.map
 import kotlinx.coroutines.flow.Flow
 import ru.paylab.core.database.dao.CategoryDao
 import ru.paylab.core.database.model.CategoryFavorite
+import ru.paylab.core.model.CategoriesRepository
 import ru.paylab.core.model.utils.toCategoriesList
 import ru.paylab.core.model.data.Category
 import javax.inject.Inject
 
 class CategoriesRepositoryImpl @Inject constructor(
     private val categoryDao: CategoryDao,
-) : ru.paylab.core.model.CategoriesRepository {
+) : CategoriesRepository {
     override fun getAllCategories(): Flow<List<Category>> =
         categoryDao.getCategoryEntities().map { categories ->
             categories.toCategoriesList()
@@ -30,7 +31,7 @@ class CategoriesRepositoryImpl @Inject constructor(
             it.toCategoriesList()
         }.asFlow()
 
-    override fun getSelectedCategory(): Flow<List<Category>> =
+    override fun getSelectedCategories(): Flow<List<Category>> =
         categoryDao.getSelectedCategoryEntities().map { categories ->
             categories.toCategoriesList()
         }.asFlow()

@@ -22,7 +22,6 @@ import org.junit.runner.Description
 import ru.paylab.core.model.ArticlesRepository
 import ru.paylab.core.model.data.Article
 import ru.paylab.core.model.data.ArticleCategories
-import ru.paylab.core.model.data.Category
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainDispatcherBookmarkRule(
@@ -87,6 +86,10 @@ class BookmarkViewModelTest {
             TODO("Not yet implemented")
         }
 
+        override suspend fun refreshLocalCache() {
+            TODO("Not yet implemented")
+        }
+
         override fun getAllArticlesCategory(): Flow<List<ArticleCategories>> {
             TODO("Not yet implemented")
         }
@@ -95,11 +98,11 @@ class BookmarkViewModelTest {
             TODO("Not yet implemented")
         }
 
-        override fun getUnreadCountArticles(): Flow<Long> {
+        override fun getSavedArticles(): Flow<List<Article>> {
             TODO("Not yet implemented")
         }
 
-        override fun getSelectedCategories(): Flow<List<Category>> {
+        override fun getUnreadCountArticles(): Flow<Long> {
             TODO("Not yet implemented")
         }
 
@@ -111,11 +114,23 @@ class BookmarkViewModelTest {
             TODO("Not yet implemented")
         }
 
-        override fun getAllCategories(): Flow<List<Category>> {
+        override fun prepareSaveDoc(id: Int): String {
             TODO("Not yet implemented")
         }
 
-        override suspend fun updateCategory(id: Int, isFavorite: Boolean) {
+        override fun getSavedDocFileName(id: Int): String {
+            TODO("Not yet implemented")
+        }
+
+        override fun getImageFileName(id: Int): String {
+            TODO("Not yet implemented")
+        }
+
+        override fun getSavedArticle(): Flow<Long> {
+            TODO("Not yet implemented")
+        }
+
+        override suspend fun saveImage(id: Int, url: String) {
             TODO("Not yet implemented")
         }
 

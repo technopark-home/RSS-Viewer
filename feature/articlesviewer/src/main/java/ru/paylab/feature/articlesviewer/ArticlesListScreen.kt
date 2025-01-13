@@ -28,7 +28,6 @@ internal fun ArticlesRefreshListScreen(
         onRefresh = onRefresh
     ) {
         ArticlesListScreen(
-            //modifier = modifier,
             infos = articles,
             onMarkRead = onMarkRead,
             onBookMark = onBookMark,

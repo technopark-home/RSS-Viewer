@@ -55,12 +55,8 @@ dependencies {
     implementation(libs.dagger)
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
-    // TODO Remove this
     implementation(project(":core:designsystem"))
     implementation(project(":core:model"))
-    implementation(project(":core:localcache"))
-    implementation(project(":core:database"))
-    implementation(project(":core:datastore"))
     ksp(libs.hilt.android.compiler)
 
     testImplementation(libs.junit)

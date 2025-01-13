@@ -33,7 +33,7 @@ interface LocalCache {
 
     suspend fun saveImage(id: Int, url: String)
 
-    fun saveDoc(id: Int): String
+    fun prepareSaveDoc(id: Int): String
 
     fun savedDocFileName(id: Int): String
 

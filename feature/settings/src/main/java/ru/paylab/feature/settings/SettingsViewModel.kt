@@ -12,14 +12,14 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import ru.paylab.core.model.ArticlesRepository
-import ru.paylab.core.datastore.ColorMode
-import ru.paylab.core.datastore.UserSettingsDataStore
-import ru.paylab.core.datastore.FilterView
+import ru.paylab.core.model.UserSettingsRepository
+import ru.paylab.core.model.data.ColorMode
+import ru.paylab.core.model.data.FilterView
 import javax.inject.Inject
 
 @HiltViewModel
 internal class SettingsViewModel @Inject constructor(
-    private val userDataRepository: UserSettingsDataStore,
+    private val userDataRepository: UserSettingsRepository,
     private val articlesRepository: ArticlesRepository,
 ) : ViewModel() {
 
@@ -33,9 +33,9 @@ internal class SettingsViewModel @Inject constructor(
             ::Triple,
         ),
         combine(
-            userDataRepository.deleteDate,
+            userDataRepository.deleteDay,
             userDataRepository.url,
-            userDataRepository.filterSet,
+            userDataRepository.filters,
             ::Triple,
         ),
         _refresh
@@ -83,7 +83,7 @@ internal class SettingsViewModel @Inject constructor(
 
     fun saveFilterSet( filterSet: Set<FilterView> ) {
         viewModelScope.launch(Dispatchers.IO) {
-            userDataRepository.saveFilterSet(filterSet)
+            userDataRepository.saveFilters(filterSet)
         }
     }
     fun saveShowByCategory(showByCategory: Boolean) {
@@ -106,7 +106,7 @@ internal class SettingsViewModel @Inject constructor(
 
     fun  saveDeleteDate(deleteDate: Long) {
         viewModelScope.launch(Dispatchers.IO) {
-            userDataRepository.saveDeleteDate(deleteDate)
+            userDataRepository.saveDeleteDay(deleteDate)
         }
     }
 }

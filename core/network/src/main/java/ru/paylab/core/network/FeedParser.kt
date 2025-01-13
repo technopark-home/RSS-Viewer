@@ -54,7 +54,6 @@ class FeedParser {
                 val imgUrl = "<img.+/(img)*>".toRegex()
                     .find(description)
                 image = imgUrl?.let { urlString.find(it.value)?.value } ?: ""
-                println("image desc: $image")
             } else if (parser.eventType == XmlPullParser.START_TAG && parser.name == "category") {
                 categories.add(readText(parser))
             } else if (parser.eventType == XmlPullParser.START_TAG && parser.name == "enclosure") {
@@ -63,7 +62,6 @@ class FeedParser {
                     .trim()
                     .startsWith("image"))
                     image = parser.getAttributeValue( null,"url").trim()
-                println("image: $image")
                 skipTag(parser)
             }  else if (parser.eventType == XmlPullParser.START_TAG && parser.name == "cover_image") {
                 image = readText(parser)

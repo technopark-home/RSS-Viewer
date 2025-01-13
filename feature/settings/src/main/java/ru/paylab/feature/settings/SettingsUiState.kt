@@ -1,7 +1,7 @@
 package ru.paylab.feature.settings
 
-import ru.paylab.core.datastore.ColorMode
-import ru.paylab.core.datastore.FilterView
+import ru.paylab.core.model.data.ColorMode
+import ru.paylab.core.model.data.FilterView
 
 internal sealed interface SettingsUiState {
     data object Loading : SettingsUiState

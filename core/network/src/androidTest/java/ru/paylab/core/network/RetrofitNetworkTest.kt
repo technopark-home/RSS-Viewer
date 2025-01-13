@@ -22,7 +22,7 @@ class FeedbackApiTest {
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
             .create(ServiceRSS::class.java)
-        parser = RetrofitNetwork()
+        parser = RetrofitNetwork(api)
     }
 
     @After

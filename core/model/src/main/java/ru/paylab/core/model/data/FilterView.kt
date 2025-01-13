@@ -1,4 +1,4 @@
-package ru.paylab.core.datastore
+package ru.paylab.core.model.data
 
 enum class FilterView(val descriptor: String) {
     ALL("All"),

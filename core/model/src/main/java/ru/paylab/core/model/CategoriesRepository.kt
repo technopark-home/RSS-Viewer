@@ -10,7 +10,7 @@ interface CategoriesRepository {
 
     fun getCategoriesSearch(query: String): Flow<List<Category>>
 
-    fun getSelectedCategory(): Flow<List<Category>>
+    fun getSelectedCategories(): Flow<List<Category>>
 
     suspend fun clearAllCategories()
 

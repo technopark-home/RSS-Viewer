@@ -28,26 +28,22 @@ fun RssSearchTopBar(
 ) {
     val textFieldState = rememberTextFieldState()
     SearchBar(
-        //DockedSearchBar(
         modifier = modifier.imePadding(),
         inputField = {
             SearchBarDefaults.InputField(
                 query = textFieldState.text.toString(),
                 onQueryChange = {
                     textFieldState.setTextAndPlaceCursorAtEnd(it)
-                    println("onQueryChange $it")
                     onSearchQuery(textFieldState.text.toString())
                 },
                 onSearch = {
                     textFieldState.setTextAndPlaceCursorAtEnd("")
                     onExpanded(false)
-                    println("onSearch ${it}")
                 },
                 expanded = expanded.value,
                 onExpandedChange = {
                     onExpanded(it)
                     onSearchQuery(textFieldState.text.toString())
-                    println("onExpandedChange InputField ${it}")
                 },
                 placeholder = { Text("Enter search text") },
                 leadingIcon = {
@@ -55,7 +51,6 @@ fun RssSearchTopBar(
                         RssViewerIcons.ArrowBack,
                         contentDescription = null,
                         modifier = Modifier.clickable {
-                            // Todo It bee together
                             onExpanded(false)
                             onSearchQuery("")
                         })
@@ -82,7 +77,6 @@ fun RssSearchTopBar(
         expanded = expanded.value,
         onExpandedChange = {
             onExpanded(it)
-            println("onExpandedChange SearchBarArticles ${it}")
         },
         content = content,
     )

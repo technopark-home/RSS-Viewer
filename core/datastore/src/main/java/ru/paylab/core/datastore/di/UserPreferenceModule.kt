@@ -6,8 +6,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import ru.paylab.core.datastore.UserSettingsDataStore
 import ru.paylab.core.datastore.UserSettingsPreferences
+import ru.paylab.core.datastore.UserSettingsPreferencesImpl
 import javax.inject.Singleton
 
 @Module
@@ -15,7 +15,7 @@ import javax.inject.Singleton
 object DataStoreModule {
     @Singleton
     @Provides
-    fun provideUserSettingsDataStore(
+    fun provideUserUserSettingsPreferences(
         @ApplicationContext context: Context
-    ): UserSettingsDataStore = UserSettingsPreferences(context)
+    ): UserSettingsPreferences = UserSettingsPreferencesImpl(context)
 }

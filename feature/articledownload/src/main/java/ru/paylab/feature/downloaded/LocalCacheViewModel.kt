@@ -12,13 +12,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import ru.paylab.core.model.ArticlesRepository
-import ru.paylab.core.localcache.LocalCache
 import javax.inject.Inject
 
 @HiltViewModel
 internal class LocalCacheViewModel @Inject constructor(
     private var articlesRepository: ArticlesRepository,
-    private var localRepository: LocalCache,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     val selectedArticleId: Int = checkNotNull(savedStateHandle["ArticlesId"])
@@ -41,7 +39,7 @@ internal class LocalCacheViewModel @Inject constructor(
     }
 
     fun getDocFileName(id: Int):String {
-        return localRepository.saveDoc(id)
+        return articlesRepository.prepareSaveDoc(id)
     }
 }
 

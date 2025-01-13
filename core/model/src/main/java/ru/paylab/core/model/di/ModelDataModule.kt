@@ -9,18 +9,28 @@ import ru.paylab.core.model.repository.ArticlesRepositoryImpl
 import ru.paylab.core.database.dao.ArticleDao
 import ru.paylab.core.database.dao.ArticleFavoriteFtsDao
 import ru.paylab.core.database.dao.CategoryDao
-import ru.paylab.core.datastore.UserSettingsDataStore
+import ru.paylab.core.datastore.UserSettingsPreferences
 import ru.paylab.core.localcache.LocalCache
 import ru.paylab.core.model.ArticleSearchRepository
 import ru.paylab.core.model.CategoriesRepository
+import ru.paylab.core.model.UserSettingsRepository
 import ru.paylab.core.model.repository.ArticleSearchRepositoryImpl
 import ru.paylab.core.model.repository.CategoriesRepositoryImpl
+import ru.paylab.core.model.repository.UserSettingsRepositoryImpl
 import ru.paylab.core.network.NetworkDataSource
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 class ModelDataModule {
+
+    @Provides
+    @Singleton
+    fun providesUserSettingsRepository(
+        userSettingsPreferences: UserSettingsPreferences,
+    ): UserSettingsRepository = UserSettingsRepositoryImpl(
+        userSettingsPreferences = userSettingsPreferences,
+    )
 
     @Provides
     @Singleton
@@ -44,7 +54,7 @@ class ModelDataModule {
         rssService: NetworkDataSource,
         articleDao: ArticleDao,
         categoryDao: CategoryDao,
-        userSettingsRepository: UserSettingsDataStore,
+        userSettingsRepository: UserSettingsRepository,
         localCacheRepository: LocalCache,
     ): ArticlesRepository = ArticlesRepositoryImpl(
         rssService = rssService,

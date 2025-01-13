@@ -41,7 +41,6 @@ internal fun AppRssNavHost(
     val navigateUp: () -> Unit = {
         navController.navigateUp()
     }
-    println("REC TITLE: ${screenTitle.value}")
     NavHost(
         navController = navController,
         startDestination = RouteNavigation.ROUTE_ARTICLE,

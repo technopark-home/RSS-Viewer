@@ -11,20 +11,18 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import ru.paylab.core.model.ArticlesRepository
-import ru.paylab.core.datastore.UserSettingsDataStore
-import ru.paylab.core.localcache.LocalCache
+import ru.paylab.core.model.UserSettingsRepository
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    userSettingsDataStore: UserSettingsDataStore,
+    userSettingsDataStore: UserSettingsRepository,
     private val articlesRepository: ArticlesRepository,
-    private val localRepository: LocalCache,
 ): ViewModel() {
     init {
         viewModelScope.launch(Dispatchers.IO) {
             articlesRepository.refresh()
-            localRepository.refresh()
+            articlesRepository.refreshLocalCache()
         }
     }
 
@@ -41,22 +39,19 @@ class MainViewModel @Inject constructor(
     private val _screenTitle: Flow<String> = articlesRepository.getTitleFeed()
     val screenTitle: StateFlow<String> = _screenTitle.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
+        started = SharingStarted.WhileSubscribed(5_000),
         initialValue = "",
     )
 
     fun saveImage(id: Int, url: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            localRepository.checkDocFile(id)
-            if (url.isNotEmpty()) localRepository.saveImage(id, url)
-            localRepository.refresh()
+            articlesRepository.saveImage(id, url)
         }
     }
 
     fun clearSaved(id: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            localRepository.clearSaved(id)
-            localRepository.refresh()
+            articlesRepository.clearSaved(id)
         }
     }
 }

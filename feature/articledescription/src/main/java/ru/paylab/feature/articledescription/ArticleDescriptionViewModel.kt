@@ -13,13 +13,13 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import ru.paylab.core.model.ArticlesRepository
 import ru.paylab.core.designsystem.utils.RouteNavigation
-import ru.paylab.core.localcache.LocalCache
+import ru.paylab.core.model.CategoriesRepository
 import javax.inject.Inject
 
 @HiltViewModel
 internal class ArticleDescriptionViewModel @Inject constructor(
     private val articlesRepository: ArticlesRepository,
-    private val localRepository: LocalCache,
+    private val categoriesRepository: CategoriesRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val selectedArticleId = savedStateHandle.getStateFlow(
@@ -28,12 +28,11 @@ internal class ArticleDescriptionViewModel @Inject constructor(
     )
     private val _article: Flow<ArticleUiState> = combine(
         articlesRepository.getArticlesWithCategory(selectedArticleId.value),
-        localRepository.getSavedIds(),
         selectedArticleId,
-    ) { article, ids, selectedId ->
+    ) { article, selectedId ->
         article?.let {
             if(it.id == selectedId)
-                ArticleUiState.Success(it.apply { isSaved = ids.contains(selectedId) })
+                ArticleUiState.Success(it)
             else ArticleUiState.Error
         }?: ArticleUiState.Error
     }
@@ -52,13 +51,12 @@ internal class ArticleDescriptionViewModel @Inject constructor(
 
     fun categoryFavorite(id: Int, isFavorite: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            articlesRepository.updateCategory(id = id, isFavorite = isFavorite)
+            categoriesRepository.updateCategory(categoryId = id, isFavorite = isFavorite)
         }
     }
     fun clearSaved(id: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            localRepository.clearSaved(id)
-            localRepository.refresh()
+            articlesRepository.clearSaved(id)
         }
     }
 }

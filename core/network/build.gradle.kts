@@ -27,6 +27,9 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
@@ -41,6 +44,7 @@ dependencies {
     implementation(libs.adapter.rxjava2)
     implementation(libs.dagger)
     implementation(libs.hilt.android)
+    implementation(libs.logging.interceptor)
     ksp(libs.hilt.android.compiler)
     implementation(libs.hilt.android.gradle.plugin)
 

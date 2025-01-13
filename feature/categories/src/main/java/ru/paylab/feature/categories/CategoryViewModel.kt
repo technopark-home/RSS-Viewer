@@ -13,14 +13,16 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import ru.paylab.core.model.ArticlesRepository
+import ru.paylab.core.model.CategoriesRepository
 import ru.paylab.core.model.data.Category
 import javax.inject.Inject
 
 @HiltViewModel
 class CategoryViewModel @Inject constructor(
     private var articlesRepository: ArticlesRepository,
+    private var categoriesRepository: CategoriesRepository,
 ) : ViewModel() {
-    private val categoryPagingDataFlow: Flow<List<Category>> = articlesRepository.getAllCategories()
+    private val categoryPagingDataFlow: Flow<List<Category>> = categoriesRepository.getAllCategories()
     val itemsCategory: StateFlow<List<Category>> = categoryPagingDataFlow.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -30,8 +32,8 @@ class CategoryViewModel @Inject constructor(
 
     fun markFavoriteCategory(id: Int, isFavorite: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            articlesRepository.updateCategory(
-                id = id, isFavorite = isFavorite
+            categoriesRepository.updateCategory(
+                categoryId = id, isFavorite = isFavorite
             )
         }
     }

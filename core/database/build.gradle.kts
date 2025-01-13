@@ -62,9 +62,6 @@ dependencies {
     implementation(libs.androidx.room.paging)
 
     implementation(libs.kotlinx.datetime)
-    implementation(project(":core:network"))
-    implementation(project(":core:datastore"))
-    implementation(project(":core:localcache"))
 
     testImplementation(libs.junit)
     testImplementation( libs.kotlinx.coroutines.test )
