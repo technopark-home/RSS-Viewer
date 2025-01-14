@@ -55,10 +55,12 @@ class UserSettingsRepositoryImpl @Inject constructor(
     distinctUntilChanged()
 
     override suspend fun saveDeleteDay(deleteDay: Long) =
-        userSettingsPreferences.saveField(FILTER_SHOW_CATEGORY, deleteDay.toString())
+        userSettingsPreferences.saveField(TUNING_DELETE, deleteDay.toString())
 
     override val colorMode: Flow<ColorMode> = userSettingsPreferences.getFieldFlow(SETTING_COLOR_MODE).map {
-            ColorMode.getEnum(it)
+            ColorMode.getEnum(
+                it.ifEmpty{ ColorMode.SYSTEM.descriptor }
+            )
         }.distinctUntilChanged()
         .catch { emit(ColorMode.SYSTEM) }
 

@@ -9,8 +9,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import ru.paylab.core.designsystem.uikit.RssPullRefreshIndicator
-import ru.paylab.core.designsystem.uikit.ArticleCard
 import ru.paylab.core.model.data.Article
 
 @Composable
@@ -44,13 +44,14 @@ internal fun ArticlesListScreen(
     onBookMark: (Int, Boolean) -> Unit,
     onSave: (Int, Boolean) -> Unit,
 ) {
-    println("ArticleInfo ${infos.size}")
+    //println("ArticleInfo ${infos.size}")
+    val localUriHandler = LocalUriHandler.current
     var clickedItemId by remember { mutableIntStateOf(Int.MIN_VALUE) }
 
     LazyColumn(modifier.fillMaxSize()) {
-        items(infos) { it: Article ->
+        items(infos) { article: Article ->
             ArticleCard(
-                article = it,
+                article = article,
                 onItemClick = { id ->
                     if(clickedItemId != Int.MIN_VALUE) {
                         onMarkRead(clickedItemId, true)
@@ -61,7 +62,9 @@ internal fun ArticlesListScreen(
                 expandedItemId = clickedItemId,
                 onBookMark = onBookMark,
                 onSave = onSave,
-                onSavedView = {},
+                onBodyClick = { _ ->
+                    localUriHandler.openUri(article.link)
+                },
             )
         }
     }

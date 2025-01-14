@@ -1,4 +1,4 @@
-package ru.paylab.core.designsystem.uikit
+package ru.paylab.feature.articlesviewer
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
@@ -32,21 +32,18 @@ import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.datetime.Instant
-import kotlinx.datetime.toJavaInstant
+import ru.paylab.core.designsystem.uikit.RssAsyncImage
 import ru.paylab.core.designsystem.utils.RssViewerIcons
+import ru.paylab.core.designsystem.utils.rssConvertDate
 import ru.paylab.core.model.data.Article
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-
 
 @Composable
-fun ArticleCard(
+internal fun ArticleCard(
     article: Article,
     onItemClick: (Int) -> Unit,
     expandedItemId: Int,
     onSave: (Int, Boolean) -> Unit,
-    onSavedView: (Int) -> Unit,
+    onBodyClick: (Int) -> Unit,
     onBookMark: (Int, Boolean) -> Unit,
 ) {
     val sizeImg = animateFloatAsState(
@@ -107,38 +104,10 @@ fun ArticleCard(
             RssAsyncImage(
                 imageUrl = res,
                 modifier = Modifier
-                    //.fillMaxWidth((.35f))
                     .fillMaxWidth(fraction = sizeImg.value)
                     .height((250 * sizeImg.value).dp)
                     .clip(RoundedCornerShape(6.dp)),
             )
-            /*val request: Any =
-                if (res.isNotEmpty()) ImageRequest.Builder(LocalContext.current).data(res)
-                    .crossfade(true).build()
-                else R.drawable.no_image
-            val request: Any = ImageRequest.Builder(LocalContext.current).data(res)
-                .crossfade(true).build()
-            AsyncImage(
-                model = request,
-                modifier = Modifier
-                    //.fillMaxWidth((.35f))
-                    .fillMaxWidth(fraction = sizeImg.value)
-                    .height((250 * sizeImg.value).dp)
-                    .clip(RoundedCornerShape(6.dp)),
-                contentDescription = null,
-                contentScale = ContentScale.Fit,
-                //contentScale = ContentScale.Crop,
-                onLoading = {
-                    println("Loading $res")
-                    //CircularProgressIndicator(modifier = Modifier.requiredSize(40.dp))
-                },
-                // TODO Do resource
-                //error = painterResource(R.drawable.baseline_broken_image_24),
-                //placeholder = painterResource(R.drawable.baseline_downloading_24),
-
-                onSuccess = { println("onSuccess $res") },
-                onError = { println("onError $res") },
-            )*/
             if (article.id != expandedItemId) {
                 Column(
                     modifier = Modifier
@@ -155,14 +124,8 @@ fun ArticleCard(
                             .padding(8.dp)
                             .fillMaxWidth()
                     )
-                    val convertDate = @Composable
-                    fun(time: Long): String {
-                        val instant: Instant = Instant.fromEpochMilliseconds(time * 1000)
-                        return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-                            .withZone(ZoneId.systemDefault()).format(instant.toJavaInstant())
-                    }
                     Text(
-                        text = convertDate(article.pubDate),
+                        text = rssConvertDate(article.pubDate),
                         fontSize = 12.sp,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -178,7 +141,7 @@ fun ArticleCard(
             BasicText(
                 modifier = Modifier
                     .padding(8.dp)
-                    .clickable { onSavedView(article.id) },
+                    .clickable { onBodyClick(article.id) },
                 text = styledAnnotatedString,
                 style = basicTextStyle,
             )

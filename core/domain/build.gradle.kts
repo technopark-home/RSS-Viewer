@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "ru.paylab.feature.articlesviewer"
+    namespace = "ru.paylab.core.domain"
     compileSdk = 35
 
     defaultConfig {
@@ -29,13 +29,6 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14"
-    }
-
 }
 
 dependencies {
@@ -43,25 +36,16 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
-    implementation(libs.material3)
-    implementation(libs.androidx.navigation.common.ktx)
-    implementation(libs.androidx.runtime.android)
-    implementation(libs.androidx.navigation.runtime.ktx)
-    implementation(libs.androidx.runtime.android)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.runtime.livedata)
+
+
     implementation(libs.dagger)
     implementation(libs.hilt.android)
-    implementation(libs.androidx.hilt.navigation.compose)
-    implementation(project(":core:designsystem"))
-    implementation(project(":core:model"))
-    implementation(project(":core:domain"))
-    implementation(project(":feature:searcharticles"))
+    implementation(libs.androidx.foundation.layout.android)
+
     ksp(libs.hilt.android.compiler)
+    implementation(libs.hilt.android.gradle.plugin)
+    implementation(libs.kotlinx.datetime)
+    implementation(project(":core:model"))
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

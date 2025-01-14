@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import ru.paylab.core.domain.FollowedTopicsUseCase
 import ru.paylab.core.model.ArticlesRepository
 import ru.paylab.core.model.CategoriesRepository
 import ru.paylab.core.model.UserSettingsRepository
@@ -25,9 +26,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ArticlesViewModel @Inject constructor(
-    userDataRepository: UserSettingsRepository,
     private val articlesRepository: ArticlesRepository,
-    private val categoriesRepository: CategoriesRepository,
+    private val followedTopicsUseCase: FollowedTopicsUseCase
 ) : ViewModel() {
     var isRefreshing by mutableStateOf(false)
         private set
@@ -69,30 +69,11 @@ class ArticlesViewModel @Inject constructor(
         }
     }
 
-    private val _showByCategory: Flow<Boolean> = userDataRepository.showByCategory
-
-    private val _filters: Flow<Set<FilterView>> = userDataRepository.filters
-
-    private val _selectedCategoryPagingDataFlow: Flow<List<Category>> =
-        categoriesRepository.getSelectedCategories()
-
-    val titleCategory: StateFlow<List<TitleCategory>> = combine(
-        _filters, _selectedCategoryPagingDataFlow, _showByCategory
-    ) { filter, selectedCategory, isShowCategory ->
-        filter.toMutableList().map {
-            TitleCategory(
-                id = it.ordinal,
-                name = it.descriptor,
-                type = it,
-                categoryFavorite = false,
-            )
-        }.plus(
-            if (isShowCategory) selectedCategory.toTitleCategoryList()
-            else emptyList()
+    val titleCategory: StateFlow<List<TitleCategory>> = followedTopicsUseCase
+        .titleCategory
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList(),
         )
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList(),
-    )
 }

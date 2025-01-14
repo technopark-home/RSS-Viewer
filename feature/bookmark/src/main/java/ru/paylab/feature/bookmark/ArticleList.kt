@@ -9,9 +9,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import ru.paylab.core.designsystem.uikit.ArticleCard
 import ru.paylab.core.model.data.Article
 
 @Composable
@@ -22,16 +22,17 @@ fun ArticleInfoList(
     onBookMark: (Int, Boolean) -> Unit,
     onSave: (Int, Boolean) -> Unit,
 ) {
+    val localUriHandler = LocalUriHandler.current
     var clickedItemId by remember { mutableIntStateOf(Int.MIN_VALUE) }
     //
     LazyColumn(modifier.fillMaxSize()
         .semantics { contentDescription = "ArticleLazyList" }
     ) {
-        items(infos) { it: Article ->
+        items(infos) { article: Article ->
             ArticleCard(
-                article = it,
+                article = article,
                 onItemClick = { id ->
-                    if(clickedItemId != Int.MIN_VALUE) {
+                    if (clickedItemId != Int.MIN_VALUE) {
                         onMarkRead(clickedItemId, true)
                     }
                     clickedItemId = if (clickedItemId == id) Int.MIN_VALUE
@@ -40,7 +41,9 @@ fun ArticleInfoList(
                 expandedItemId = clickedItemId,
                 onBookMark = onBookMark,
                 onSave = onSave,
-                onSavedView = {},
+                onBodyClick = { _ ->
+                    localUriHandler.openUri(article.link)
+                },
             )
         }
     }
